@@ -1,0 +1,105 @@
+spring:
+  application:
+    name: log-ingestion-query-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+server:
+  port: 8080
+  shutdown: graceful
+  tomcat:
+    threads:
+      max: 200
+      min-spare: 20
+    connection-timeout: 5s
+    keep-alive-timeout: 30s
+
+# Kafka configuration
+kafka:
+  topic: log-events-v1
+  consumer-group: log-ingest-consumer
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  partitions: 8
+  replication-factor: 3
+  producer:
+    acks: all
+    retries: 3
+    batch-size: 65536
+    linger-ms: 5
+    compression-type: snappy
+  consumer:
+    auto-offset-reset: earliest
+    max-poll-records: 500
+    session-timeout-ms: 30000
+    heartbeat-interval-ms: 10000
+
+spring.kafka:
+  bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  consumer:
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    properties:
+      spring.json.trusted.packages: "com.prempratapk.logingest.model"
+
+# AWS configuration
+aws:
+  region: ${AWS_REGION:us-east-1}
+  kms-key-arn: ${KMS_KEY_ARN:}
+
+# S3 storage configuration
+s3:
+  bucket: ${S3_BUCKET}
+  prefix: logs/
+  flush-interval-seconds: 60
+  max-records-per-file: 100000
+
+# Athena query configuration
+athena:
+  database: log_analytics
+  table: enriched_logs
+  output-location: ${ATHENA_OUTPUT_BUCKET}
+  max-poll-attempts: 30
+  poll-interval-ms: 500
+
+# Parquet writer configuration
+parquet:
+  compression: SNAPPY
+  row-group-size-mb: 128
+  page-size-kb: 1024
+
+# Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    export:
+      cloudwatch:
+        enabled: ${CLOUDWATCH_METRICS_ENABLED:false}
+        namespace: LogIngestionService
+        step: 1m
+
+# Logging
+logging:
+  level:
+    com.prempratapk.logingest: INFO
+    org.springframework.kafka: WARN
+    org.apache.kafka: WARN
+    org.apache.hadoop: WARN
+    org.apache.parquet: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Graceful shutdown
+spring.lifecycle:
+  timeout-per-shutdown-phase: 30s
