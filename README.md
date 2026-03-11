@@ -50,15 +50,15 @@ A high-throughput distributed log ingestion and query service built with **Java 
 
 ## Features
 
-- **High-throughput ingestion** — Kafka-backed pipeline handles >100K events/sec with async consumer groups
-- **Partitioned Parquet storage** — Events partitioned by `year/month/day/hour` on S3 for efficient Athena scans
-- **GeoIP & ASN enrichment** — Inline enrichment of source IP addresses during stream processing
-- **KMS encryption** — All S3 objects encrypted at rest using AWS KMS customer-managed keys
-- **Athena query API** — REST endpoint executes Athena SQL with async polling and result pagination
-- **Parquet compaction** — Background job compacts small files to reduce S3 object count and query cost
-- **Dead Letter Queue** — Malformed or unprocessable records routed to SQS DLQ with full context
-- **Observability** — CloudWatch metrics, structured JSON logging, and health endpoints
-- **CI/CD** — GitHub Actions pipeline with unit + integration tests, Docker build, and ECR push
+- **High-throughput ingestion** - Kafka-backed pipeline handles >100K events/sec with async consumer groups
+- **Partitioned Parquet storage** - Events partitioned by `year/month/day/hour` on S3 for efficient Athena scans
+- **GeoIP & ASN enrichment** - Inline enrichment of source IP addresses during stream processing
+- **KMS encryption** - All S3 objects encrypted at rest using AWS KMS customer-managed keys
+- **Athena query API** - REST endpoint executes Athena SQL with async polling and result pagination
+- **Parquet compaction** - Background job compacts small files to reduce S3 object count and query cost
+- **Dead Letter Queue** - Malformed or unprocessable records routed to SQS DLQ with full context
+- **Observability** - CloudWatch metrics, structured JSON logging, and health endpoints
+- **CI/CD** - GitHub Actions pipeline with unit + integration tests, Docker build, and ECR push
 
 ## Tech Stack
 
@@ -260,4 +260,4 @@ parquet:
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
